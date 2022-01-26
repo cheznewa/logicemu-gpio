@@ -1710,6 +1710,8 @@ var TYPE_MUSIC_NOTE = TYPE_index++; // music, speaker, sound, audio, jukebox. ty
 var TYPE_JACK = TYPE_index++; // jack for patch cables
 var TYPE_TOC = TYPE_index++; // table of contents, a type of comment
 var TYPE_KINETIC = TYPE_index++;
+var TYPE_GPIO_OUT = TYPE_index++;
+var TYPE_GPIO_IN = TYPE_index++;
 
 // number types (higher value/nearer to bottom = higher priority) [numbertype number_type number priority number order numbers priority numbers order]
 var NUMBER_index = 0;
@@ -1729,6 +1731,8 @@ var NUMBER_GLOBAL = NUMBER_index++; // for global wire g
 var NUMBER_BUS = NUMBER_index++;
 var NUMBER_ANTENNA = NUMBER_index++; // for antenna wrap
 var NUMBER_COMMENT = NUMBER_index++;
+var NUMBER_GPIO_OUT = NUMBER_index++;
+var NUMBER_GPIO_IN = NUMBER_index++;
 
 
 /*
@@ -1750,14 +1754,15 @@ typesymbols[TYPE_ONEHOT] = 'h'; typesymbols[TYPE_NONEHOT] = 'H';
 typesymbols[TYPE_CONSTANT_OFF] = 'f'; typesymbols[TYPE_CONSTANT_ON] = 'F';
 typesymbols[TYPE_FLIPFLOP] = 'c'; typesymbols[TYPE_RANDOM] = '?'; typesymbols[TYPE_DELAY] = 'd';
 typesymbols[TYPE_TRISTATE] = 'z'; typesymbols[TYPE_TRISTATE_INV] = 'Z';
-typesymbols[TYPE_MUSIC_NOTE] = 'N'; typesymbols[TYPE_JACK] = 'J'; typesymbols[TYPE_KINETIC] = 'K';
+typesymbols[TYPE_MUSIC_NOTE] = 'N'; typesymbols[TYPE_JACK] = 'J'; typesymbols[TYPE_KINETIC] = 'K'; typesymbols[TYPE_GPIO_OUT] = '!'; typesymbols[TYPE_GPIO_IN] = 'G';
 
 
 var devicemap = {'a':true, 'A':true, 'o':true, 'O':true, 'e':true, 'E':true, 'h':true, 'H':true, 'f':true, 'F':true,
                  's':true, 'S':true, 'l':true, 'r':true, 'R':true, 'p':true, 'P':true,
                  'j':true, 'k':true, 'd':true, 't':true, 'q':true, 'Q':true, 'c':true, 'C':true, 'y':true,
                  'b':true, 'B':true, 'M':true, 'U':true, 'i':true, 'T':true, 'D':true, 'z':true, 'Z':true,
-                 '?':true, 'N':true, 'J':true, 'K':true};
+                 '?':true, 'N':true, 'J':true, 'K':true
+                 ,'!':true,'G':true};
 // all "large" devices with slightly different parsing rules, where different cells can be different types of inputs/outputs
 // the "start" cells allow starting the parsing there. The extra ones can only be used once having started from one of the others
 // characters NOT included here but that can be part of large device once parsing: 'c' (can be standalone gate), '#', digits
@@ -1786,7 +1791,7 @@ var knownmap = {'-':true, '|':true, '+':true, '.':true, '/':true, '\\':true, 'x'
                 'c':true, 'C':true, 'y':true, 'j':true, 'k':true, 't':true, 'd':true, 'q':true, 'Q':true, 'b':true, 'B':true, 'M':true, 'U':true,
                 '^':true, '>':true, 'v':true, '<':true, 'm':true, ']':true, 'w':true, '[':true, 'V':true, 'W':true, 'X':true, 'Y':true,
                 '#':true, '=':true, 'i':true, 'T':true, 'D':true, '(':true, ')':true, 'n':true, 'u':true, ',':true, '%':true, '&':true, '*':true,
-                'z':true, 'Z':true, '?':true, 'N':true, 'J':true, 'K':true, 'toc':true,
+                'z':true, 'Z':true, '?':true, 'N':true, 'J':true, 'K':true, 'toc':true,'!':true,'G':true,
                 '#i':true, '#c':true, '#f':true, '#b':true, '#M':true, '#U':true, '#T':true, '#D':true, '#N':true};
 var digitmap = {'0':true, '1':true, '2':true, '3':true, '4':true, '5':true, '6':true, '7':true, '8':true, '9':true, '$':true};
 var puredigitmap = {'0':true, '1':true, '2':true, '3':true, '4':true, '5':true, '6':true, '7':true, '8':true, '9':true};
@@ -8633,6 +8638,22 @@ function Component() {
     return false;
   };
 
+   function from_gpio(num)
+   {
+   var xmlHttp = new XMLHttpRequest();
+   xmlHttp.open("GET","gpio.php?m=in&n="+num,false);
+   xmlHttp.send(null);
+   return xmlHttp.responseText == 1;
+   }
+   function to_gpio(num,val)
+   {
+   if (val){val=1;}else{val=0;}
+   var xmlHttp = new XMLHttpRequest();
+   xmlHttp.open("GET","gpio.php?m=out&v="+val+"&n="+num,false);
+   xmlHttp.send(null);
+   return val == 1;
+   }
+
   /*
   numon: num inputs that are on
   numoff: num inputs that are off
@@ -8695,6 +8716,14 @@ function Component() {
       return this.value; // not implemented in this function, but elsewhere
     } else if(this.type == TYPE_RANDOM) {
       return (Math.random() < 0.5);
+    } else if(this.type == TYPE_GPIO_IN) {
+      return from_gpio(this.number);
+    } else if(this.type == TYPE_GPIO_OUT) {
+      return to_gpio(this.number,numon);
+    } else if(this.type == TYPE_GPIO_IN) {
+      return from_gpio(this.number);
+    } else if(this.type == TYPE_GPIO_OUT) {
+      return to_gpio(this.number,numon);
     } else if(this.type == TYPE_MUSIC_NOTE) {
       return numon > 0;  // NOTE: not correct in case volume is off or not enabled, this is just initial value
     } else if(this.type == TYPE_JACK) {
@@ -9402,6 +9431,10 @@ function Component() {
         this.type = TYPE_CONSTANT_ON;
       } else if(this.type == TYPE_CONSTANT_ON) {
         this.type = TYPE_CONSTANT_OFF;
+      } else if(this.type == TYPE_GPIO_IN) {
+      return from_gpio(this.number);
+      } else if(this.type == TYPE_GPIO_OUT) {
+      return to_gpio(this.number,numon);
       } else if(this.type == TYPE_COUNTER || this.type == TYPE_RANDOM) {
         this.value = !this.value;
       } else if(this.type == TYPE_KINETIC && this.number == 0) {
@@ -10693,6 +10726,8 @@ function Cell() {
       if(tc == 'E') title = 'XNOR gate (even parity detector). Truth table for 2 inputs: 00:1, 01:0, 10:0, 11:1';
       if(tc == 'h') title = 'one-hot detector (same as XOR if 2 inputs). Truth table for 2 inputs: 00:0, 01:1, 10:1, 11:0';
       if(tc == 'H') title = 'inverted one-hot detector (same as XNOR if 2 inputs). Truth table for 2 inputs: 00:1, 01:0, 10:0, 11:1';
+      if(tc == '!') title = 'GPIO (General Input Output Purpose) as output mode, pin number ' + component.number;
+      if(tc == 'G') title = 'GPIO (General Input Output Purpose) as input mode, pin number ' + component.number;
       if(tc == 'K') {
         title = 'kinetic device';
         if(component) {
@@ -16640,6 +16675,8 @@ function parseComponents() {
               else if(c == 'z') type2 = TYPE_TRISTATE;
               else if(c == 'Z') type2 = TYPE_TRISTATE_INV;
               else if(c == '?') type2 = TYPE_RANDOM;
+              else if(c == '!') type2 = TYPE_GPIO_OUT;
+              else if(c == 'G') type2 = TYPE_GPIO_IN;
               else if(c == 'N' || c == '#N') type2 = TYPE_MUSIC_NOTE;
               else if(c == 'J') type2 = TYPE_JACK;
               else if(c == 'K') type2 = TYPE_KINETIC;
@@ -17987,6 +18024,8 @@ registerChangeDropdownElement(TYPE_DELAY);
 registerChangeDropdownElement(TYPE_MUSIC_NOTE);
 registerChangeDropdownElement(TYPE_RANDOM);
 registerChangeDropdownElement(TYPE_JACK);
+registerChangeDropdownElement(TYPE_GPIO_IN);
+registerChangeDropdownElement(TYPE_GPIO_OUT);
 registerChangeDropdownElement(TYPE_KINETIC, 'gear', 0);
 registerChangeDropdownElement(TYPE_KINETIC, 'fan', 1);
 registerChangeDropdownElement(TYPE_KINETIC, 'TNT', 8);
