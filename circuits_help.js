@@ -10603,7 +10603,7 @@ registerCircuit('CrowPi Test GPIO',`0"Testing On Crow Pi"
 27!<--s "Vibration"
 24G-->l "Sound"
 
-  r-->l "Rafraissichement"
+  r-->l "Refreshing"
 
 17G-->l "Touch"
 
