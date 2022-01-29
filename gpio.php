@@ -21,6 +21,7 @@ fclose($vfs);
 if ($_GET["m"] == "out")
 {
 fwrite($dirfs,"out");
+fclose($dirfs);
 $vfs = fopen($gpiopath."/gpio".$_GET["n"]."/value","w");
 fwrite($vfs,$_GET["v"]);
 fclose($vfs);

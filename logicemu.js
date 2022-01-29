@@ -8720,10 +8720,6 @@ function Component() {
       return from_gpio(this.number);
     } else if(this.type == TYPE_GPIO_OUT) {
       return to_gpio(this.number,numon);
-    } else if(this.type == TYPE_GPIO_IN) {
-      return from_gpio(this.number);
-    } else if(this.type == TYPE_GPIO_OUT) {
-      return to_gpio(this.number,numon);
     } else if(this.type == TYPE_MUSIC_NOTE) {
       return numon > 0;  // NOTE: not correct in case volume is off or not enabled, this is just initial value
     } else if(this.type == TYPE_JACK) {

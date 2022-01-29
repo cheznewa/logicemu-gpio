@@ -7106,6 +7106,9 @@ s s s
 `, 'component' + componentid++);
 
 
+registerCircuit('GPIO Input (G)', `23G-->l`,'component' + componentid++);
+
+registerCircuit('GPIO Output (!)',`  s-->!18`,'component' + componentid++);
 
 
 registerTitle('Testing');
@@ -10592,9 +10595,25 @@ registerCircuit('32-bit 2-input ALU tester', `
 
 `, 'alutest32_2');
 
+registerCircuit('CrowPi Test GPIO',`0"Testing On Crow Pi"
+
+18!<--s "BEEP/Buzzer"
+23G-->l "Motion"
+
+27!<--s "Vibration"
+24G-->l "Sound"
+
+  r-->l "Rafraissichement"
+
+17G-->l "Touch"
+
+0"Ultrasonic"
+
+16!<.-s "Ultrasonic Enabled"
+    w
+12G>e]l "Obstacle Detected"`,'crowpi');
 
 registerTitle('Front Page');
-
 
 registerCircuit('Welcome', introText, introId);
 
