@@ -10597,7 +10597,7 @@ registerCircuit('32-bit 2-input ALU tester', `
 
 registerCircuit('CrowPi Test GPIO',`0"Testing On Crow Pi"
 
-18!<--s "BEEP/Buzzer"
+18!<--p "BEEP/Buzzer"
 23G-->l "Motion"
 
 27!<--s "Vibration"
