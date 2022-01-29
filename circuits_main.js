@@ -8271,13 +8271,13 @@ registerCircuit('four directions from GPIO',`0"Please Playing On Your Crow Pi"
 012345
 gggggg
 ||||||
-T#####c<G26
-######C<G13
+T#####c<G13
+######C<G26
 
 000011
 678901
 gggggg
 ||||||
-T#####c<G25
-######C<G19
+T#####c<G19
+######C<G25
 `,'fourdirgpio');
