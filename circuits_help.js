@@ -7108,7 +7108,7 @@ s s s
 
 registerCircuit('GPIO Input (G)', `23G-->l`,'component' + componentid++);
 
-registerCircuit('GPIO Output (!)',`  s-->!18`,'component' + componentid++);
+registerCircuit('GPIO Output (!)',`  s-->!21`,'component' + componentid++);
 
 
 registerTitle('Testing');
