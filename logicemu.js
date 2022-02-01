@@ -10722,8 +10722,8 @@ function Cell() {
       if(tc == 'E') title = 'XNOR gate (even parity detector). Truth table for 2 inputs: 00:1, 01:0, 10:0, 11:1';
       if(tc == 'h') title = 'one-hot detector (same as XOR if 2 inputs). Truth table for 2 inputs: 00:0, 01:1, 10:1, 11:0';
       if(tc == 'H') title = 'inverted one-hot detector (same as XNOR if 2 inputs). Truth table for 2 inputs: 00:1, 01:0, 10:0, 11:1';
-      if(tc == '!') title = 'GPIO (General Input Output Purpose) as output mode, pin number ' + component.number;
-      if(tc == 'G') title = 'GPIO (General Input Output Purpose) as input mode, pin number ' + component.number;
+      if(tc == '!') title = 'GPIO (General Purpose Input/Output) as output mode, pin number ' + component.number;
+      if(tc == 'G') title = 'GPIO (General Purpose Input/Output) as input mode, pin number ' + component.number;
       if(tc == 'K') {
         title = 'kinetic device';
         if(component) {

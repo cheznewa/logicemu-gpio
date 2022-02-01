@@ -1,6 +1,13 @@
 <?php
 // begin param
-$gpiopath = "/sys/kernel/vgpio"; // https://github.com/nikarana/vgpio For a Raspberry Pi the value is "/sys/class/gpio"
+if (strlen(file_get_contents("/sys/kernel/debug/gpio")) == 0)
+{
+$gpiopath = "/sys/kernel/vgpio"; // Source :::: https://github.com/nikarana/vgpio
+}
+else
+{
+$gpiopath = "/sys/class/gpio";
+}
 // end param
 if (!file_exists($gpiopath."/gpio".$_GET["n"]."/direction"))
 {
