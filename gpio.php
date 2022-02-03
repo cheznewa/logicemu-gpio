@@ -1,5 +1,4 @@
 <?php
-// begin param
 if (strlen(file_get_contents("/sys/kernel/debug/gpio")) == 0)
 {
 $gpiopath = "/sys/kernel/vgpio"; // Source :::: https://github.com/nikarana/vgpio
@@ -8,7 +7,6 @@ else
 {
 $gpiopath = "/sys/class/gpio";
 }
-// end param
 if (!file_exists($gpiopath."/gpio".$_GET["n"]."/direction"))
 {
 $efs = fopen($gpiopath."/export","w");
@@ -33,3 +31,4 @@ $vfs = fopen($gpiopath."/gpio".$_GET["n"]."/value","w");
 fwrite($vfs,$_GET["v"]);
 fclose($vfs);
 }
+?>
